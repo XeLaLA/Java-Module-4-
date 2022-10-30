@@ -1,0 +1,82 @@
+CREATE TABLE IF NOT EXISTS department (
+    id        SERIAL PRIMARY KEY,
+    name      VARCHAR,
+    isProfit  BOOL
+);
+
+CREATE TABLE IF NOT EXISTS employee (
+    id              SERIAL PRIMARY KEY,
+    full_name       VARCHAR,
+    salary          NUMERIC(10,2),
+    department_id   INTEGER REFERENCES department (id)
+);
+
+
+INSERT INTO department (name, isProfit) VALUES
+    ('Бухгалтерия',False),      -- id 1
+    ('Кредитный отдел',True),   -- id 2
+    ('Отдел продаж',True),      -- id 3
+    ('Правление',False);        -- id 4
+
+
+INSERT INTO employee (full_name, salary, department_id ) VALUES
+    ('Петров Иван',30000,3),       -- Отдел продаж     id 3 
+    ('Иванова Наталья',50000,1),    -- Бухгалтерия      id 1
+    ('Мирских Петр',100000,4),      -- Правление        id 4
+    ('Улюкаев Владимир',200000,4),  -- Правление        id 4
+    ('Заморский Виктор',70000,2);   -- Кредитный Отдел  id 2
+    
+SELECT *
+FROM department;
+
+SELECT *
+FROM employee;
+
+SELECT SUM(salary) AS "Общая сумма всех зарплат"
+FROM employee;
+
+SELECT  full_name AS "ФИО", 
+        'Да' AS "Принадлежит к прибыльному отделу" 
+FROM    employee AS E 
+INNER JOIN department AS D 
+      ON   E.department_id=D.id
+WHERE   D.isProfit;
+
+SELECT *
+FROM employee AS E
+WHERE salary BETWEEN 10000 AND 100000;
+
+SELECT *
+FROM employee
+WHERE full_name='Мирских Петр';
+
+DELETE FROM employee
+WHERE full_name='Мирских Петр' OR id = 3;
+
+SELECT *
+FROM department
+WHERE name='Кредитный отдел';
+
+UPDATE department 
+SET name = 'Депозитный отдел', isProfit = False
+WHERE id=2 OR name = 'Кредитный отдел';
+
+SELECT *
+FROM employee
+WHERE LOWER(full_name) Like '%иван%';
+
+SELECT name AS "Отдел", CAST(AVG(salary) as NUMERIC(10,2)) AS "Cредняя зарплата"
+FROM employee AS E
+INNER JOIN department AS D
+      ON E.department_id = D.id
+GROUP BY d.id;
+
+SELECT *
+FROM department
+ORDER BY id;
+
+SELECT *
+FROM employee;
+
+DROP TABLE employee;
+DROP TABLE department;
